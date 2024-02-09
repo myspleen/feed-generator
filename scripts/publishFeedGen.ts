@@ -12,24 +12,27 @@ const run = async () => {
 
   // YOUR bluesky password, or preferably an App Password (found in your client settings)
   // Ex: abcd-1234-efgh-5678
-  const password = 'jubu-fw36-6eeu-wlxl'
+  if (!process.env.FEEDGEN_PUBLISH_APP_PASSWORD) {
+    throw new Error('Please provide an app password in the .env file')
+  }
+  const password = process.env.FEEDGEN_PUBLISH_APP_PASSWORD
 
   // A short name for the record that will show in urls
   // Lowercase with no spaces.
   // Ex: whats-hot
-  const recordName = 'nijimiss'
+  const recordName = 'eurube'
 
   // A display name for your feed
   // Ex: What's Hot
-  const displayName = 'にじみす'
+  const displayName = 'エウルベ'
 
   // (Optional) A description of your feed
   // Ex: Top trending content from the whole network
-  const description = 'にじみすの話題を集めるフィード'
+  const description = 'エウルベフィードを作ってみました。カプ名を含むポストのTLを作ります'
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
-  const avatar: string = ''
+  const avatar: string = '/publish/eurube.png'
 
   // -------------------------------------
   // NO NEED TO TOUCH ANYTHING BELOW HERE

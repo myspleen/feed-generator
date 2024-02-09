@@ -12,7 +12,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
-        return create.record.text.includes('ブフサタ') || create.record.text.includes('にじみす');
+        return create.record.text.includes('ブフサタ') || create.record.text.includes('estampie.work') || create.record.text.includes('エウルベ');
       })
       .map((create) => {
         return {
