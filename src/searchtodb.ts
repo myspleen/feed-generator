@@ -1,22 +1,31 @@
 // フィード作成前の投稿もDBに追加するスクリプト
 import https from 'https';
-import { createDb, Database } from './db'; // 正確なパスに注意
 import dotenv from 'dotenv';
+import { createDb, Database } from './db';
+
 dotenv.config();
 
-function fetchSearchResults(query: string, limit: number = 100): Promise<any[]> {
+async function fetchSearchResults(query: string, limit: number = 100, cursor: string = ''): Promise<any[]> {
+    let url = `https://api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=${encodeURIComponent(query)}&limit=${limit}`;
+    if (cursor) {
+        url += `&cursor=${encodeURIComponent(cursor)}`;
+    }
+
     return new Promise((resolve, reject) => {
-        // クエリパラメータにlimitを追加
-        const url = `https://api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=${encodeURIComponent(query)}&limit=${limit}`;
         https.get(url, (res) => {
             let data = '';
             res.on('data', (chunk) => {
                 data += chunk;
             });
-            res.on('end', () => {
+            res.on('end', async () => {
                 try {
                     const result = JSON.parse(data);
-                    resolve(result.posts);
+                    if (result.cursor && result.posts.length > 0) {
+                        const nextResults = await fetchSearchResults(query, limit, result.cursor);
+                        resolve([...result.posts, ...nextResults]);
+                    } else {
+                        resolve(result.posts);
+                    }
                 } catch (error) {
                     reject(error);
                 }
@@ -29,7 +38,9 @@ function fetchSearchResults(query: string, limit: number = 100): Promise<any[]> 
 
 async function saveSearchResultsToDb(db: Database, posts: any[]) {
     for (const post of posts) {
-        // まず、同じuriを持つレコードがデータベースに存在するか確認
+        // 画像の添付があればmediaカラムにimageを挿入
+        const media = post.record.embed && post.record.embed.$type === 'app.bsky.embed.images' ? 'image' : null;
+        // 同じuriを持つレコードがデータベースに存在するか確認
         const exists = await db
             .selectFrom('post')
             .select('uri')
@@ -45,18 +56,24 @@ async function saveSearchResultsToDb(db: Database, posts: any[]) {
                     cid: post.cid,
                     text: post.record.text,
                     indexedAt: post.indexedAt,
+                    media: media,
                 })
                 .execute();
+            // 取り込めたtextを表示(消してもOK)
+            console.log(`Added post to database: ${post.record.text}`);
         }
     }
 }
 
-
 async function main() {
     try {
-        const dbLocation = "./db/mydatabase.db"; // データベースファイルのパス
+        const dbLocation = maybeStr(process.env.FEEDGEN_SQLITE_LOCATION);
+        if (!dbLocation) {
+            console.error('Database location is not defined.');
+            process.exit(1);
+        }
         const db = createDb(dbLocation);
-        const queries = ['クエリ1', 'クエリ2']; // 検索クエリのリスト
+        const queries = ['ブフサタ', 'エウルベ', 'メギド イラスト', 'メギド 絵']; // 検索クエリのリスト
 
         for (const query of queries) {
             const searchResults = await fetchSearchResults(query);
@@ -65,9 +82,10 @@ async function main() {
         }
     } catch (error) {
         console.error('An error occurred:', error);
-        process.exit(1); // エラーが発生した場合にプログラムを終了させる
+        process.exit(1); // エラーが発生した場合終了
     }
 }
 
+const maybeStr = (val?: string) => val;
+
 main();
-//ビルド後 `node searchtodb.js`　で実行

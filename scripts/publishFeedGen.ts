@@ -8,7 +8,7 @@ const run = async () => {
 
   // YOUR bluesky handle
   // Ex: user.bsky.social
-  const handle = 'nocturn.bsky.social'
+  const handle = 'estampie.work'
 
   // YOUR bluesky password, or preferably an App Password (found in your client settings)
   // Ex: abcd-1234-efgh-5678
@@ -20,19 +20,19 @@ const run = async () => {
   // A short name for the record that will show in urls
   // Lowercase with no spaces.
   // Ex: whats-hot
-  const recordName = 'eurube'
+  const recordName = 'megido'
 
   // A display name for your feed
   // Ex: What's Hot
-  const displayName = 'エウルベ'
+  const displayName = 'メギド絵フィード'
 
   // (Optional) A description of your feed
   // Ex: Top trending content from the whole network
-  const description = 'エウルベフィードを作ってみました。カプ名を含むポストのTLを作ります'
+  const description = '「メギド」+「絵」or「イラスト」が含まれていて画像が添付されている投稿を集めたフィードです。自鯖に設置のため、たまにメンテナンスなどでアクセスできないときがあるのでご注意下さい。'
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
-  const avatar: string = '/publish/eurube.png'
+  const avatar: string = '/publish/mgd.png'
 
   // -------------------------------------
   // NO NEED TO TOUCH ANYTHING BELOW HERE
