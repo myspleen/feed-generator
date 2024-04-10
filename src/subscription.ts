@@ -21,15 +21,21 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
       })
       .map((create) => {
         const media = create.record.embed && create.record.embed.$type === 'app.bsky.embed.images' ? 'image' : null;
+        let labelsValue = null; 
+        if (create.record.labels && Array.isArray(create.record.labels.values) && create.record.labels.values.length > 0) {
+          labelsValue = create.record.labels.values[0].val; // 最初の label の val を使用
+        }
 
         return {
           uri: create.uri,
           cid: create.cid,
+          did: create.author.did,
           text: create.record.text,
           replyParent: create.record?.reply?.parent.uri ?? null,
           replyRoot: create.record?.reply?.root.uri ?? null,
           indexedAt: new Date().toISOString(),
           media: media,
+          labels: labelsValue, // 修正された変数を使用
         };
       });
 
