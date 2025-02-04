@@ -83,7 +83,7 @@ async function main() {
             process.exit(1);
         }
         const db = createDb(dbLocation);
-        const queries = ['ブフサタ', 'エウルベ', 'メギド イラスト', 'メギド 絵', 'estampie']; // 検索クエリのリスト
+        const queries = ['ブフサタ', 'ﾌﾞﾌｻﾀ', 'エウルベ', 'メギド イラスト', 'メギド 絵', 'estampie']; // 検索クエリのリスト
 
         for (const query of queries) {
             const searchResults = await fetchSearchResults(query);
