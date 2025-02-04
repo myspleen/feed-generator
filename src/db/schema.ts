@@ -11,8 +11,6 @@ export type Post = {
   text: string
   media: string | null
   labels: string | null
-  replyParent: string | null
-  replyRoot: string | null
   indexedAt: string
 }
 

@@ -7,6 +7,7 @@ import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return;
+
     const ops = await getOpsByType(evt);
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri);
@@ -32,8 +33,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
           cid: create.cid,
           did: create.author.did,
           text: create.record.text,
-          replyParent: create.record?.reply?.parent.uri ?? null,
-          replyRoot: create.record?.reply?.root.uri ?? null,
           indexedAt: new Date().toISOString(),
           media: media,
           labels: labelsValue, // 修正された変数を使用

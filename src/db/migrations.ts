@@ -18,8 +18,6 @@ migrations['001'] = {
       .addColumn('labels', 'varchar')
       .addColumn('text', 'text', (col) => col.notNull()) // textフィールドを追加
       .addColumn('media', 'varchar')
-      .addColumn('replyParent', 'varchar')
-      .addColumn('replyRoot', 'varchar')
       .addColumn('indexedAt', 'varchar', (col) => col.notNull())
       .execute()
     await db.schema

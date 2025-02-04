@@ -129,6 +129,11 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# intellij
+.idea/
+*.iml
+
+
 src/algos/
 bubsata.png
 .gitignore
