@@ -15,6 +15,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         const text = create.record.text;
         // メギドと絵、またはメギドとイラストを両方含む投稿のみを取り込む
         return (text.includes('メギド') && (text.includes('絵') || text.includes('イラスト'))) ||
+          text.includes('ﾌﾞﾌｻﾀ') ||
           text.includes('ブフサタ') ||
           text.includes('estampie.work') ||
           text.includes('エウルベ');
