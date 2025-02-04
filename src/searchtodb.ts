@@ -5,28 +5,30 @@ import { createDb, Database } from './db';
 
 dotenv.config();
 
-async function fetchSearchResults(query: string, limit: number = 100, cursor: string = ''): Promise<any[]> {
-    let url = `https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=${encodeURIComponent(query)}&limit=${limit}`;
-    if (cursor) {
-        url += `&cursor=${encodeURIComponent(cursor)}`;
-    }
-
+async function fetchSearchResults(query: string): Promise<any[]> {
     return new Promise((resolve, reject) => {
-        https.get(url, (res) => {
+        let url = `https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=${encodeURIComponent(query)}`;
+
+        const options = {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+            },
+        };
+
+        https.get(url, options, (res) => {
             let data = '';
             res.on('data', (chunk) => {
                 data += chunk;
             });
-            res.on('end', async () => {
+            res.on('end', () => {
                 try {
-                    const result = JSON.parse(data);
-                    if (result.cursor && result.posts.length > 0) {
-                        const nextResults = await fetchSearchResults(query, limit, result.cursor);
-                        resolve([...result.posts, ...nextResults]);
-                    } else {
-                        resolve(result.posts);
-                    }
+                    // HTMLの場合はここで失敗する
+                    const json = JSON.parse(data);
+                    // 念のため posts がなければ空配列に
+                    resolve(json.posts || []);
                 } catch (error) {
+                    // 何が返ってきてるか表示
+                    console.error('Response body:', data);
                     reject(error);
                 }
             });
