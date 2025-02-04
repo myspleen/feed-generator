@@ -6,7 +6,7 @@ import { createDb, Database } from './db';
 dotenv.config();
 
 async function fetchSearchResults(query: string, limit: number = 100, cursor: string = ''): Promise<any[]> {
-    let url = `https://api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=${encodeURIComponent(query)}&limit=${limit}`;
+    let url = `https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=${encodeURIComponent(query)}&limit=${limit}`;
     if (cursor) {
         url += `&cursor=${encodeURIComponent(cursor)}`;
     }
