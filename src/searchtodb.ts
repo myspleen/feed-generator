@@ -40,6 +40,10 @@ async function saveSearchResultsToDb(db: Database, posts: any[]) {
     for (const post of posts) {
         // 画像の添付があればmediaカラムにimageを挿入
         const media = post.record.embed && post.record.embed.$type === 'app.bsky.embed.images' ? 'image' : null;
+        let labelsValue = null;
+        if (post.record.labels && Array.isArray(post.record.labels.values) && post.record.labels.values.length > 0) {
+            labelsValue = post.record.labels.values[0].val; // 最初の label の val を使用
+        }
         // 同じuriを持つレコードがデータベースに存在するか確認
         const exists = await db
             .selectFrom('post')
@@ -54,12 +58,16 @@ async function saveSearchResultsToDb(db: Database, posts: any[]) {
                 .values({
                     uri: post.uri,
                     cid: post.cid,
+                    did: post.author.did,
                     text: post.record.text,
                     indexedAt: post.indexedAt,
                     media: media,
+                    labels: labelsValue, // 修正された変数を使用
                 })
                 .execute();
             // 取り込めたtextを表示(消してもOK)
+
+            console.log(`Added post to database: ${labelsValue}`);
             console.log(`Added post to database: ${post.record.text}`);
         }
     }

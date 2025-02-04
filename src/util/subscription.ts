@@ -85,7 +85,11 @@ export const getOpsByType = async (evt: Commit): Promise<OperationsByType> => {
   for (const op of evt.ops) {
     const uri = `at://${evt.repo}/${op.path}`
     const [collection] = op.path.split('/')
-
+    const authorInfo: AuthorInfo = {
+      did: evt.repo, // ここで適切なDIDを設定
+      handle: "exampleHandle", // 実際には適切な方法でhandleを取得する
+      // displayNameやavatarも必要に応じて設定
+    };
     if (op.action === 'update') continue // updates not supported yet
 
     if (op.action === 'create') {
@@ -93,7 +97,7 @@ export const getOpsByType = async (evt: Commit): Promise<OperationsByType> => {
       const recordBytes = car.blocks.get(op.cid)
       if (!recordBytes) continue
       const record = cborToLexRecord(recordBytes)
-      const create = { uri, cid: op.cid.toString(), author: evt.repo }
+      const create = { uri, cid: op.cid.toString(), author: authorInfo };
       if (collection === ids.AppBskyFeedPost && isPost(record)) {
         opsByType.posts.creates.push({ record, ...create })
       } else if (collection === ids.AppBskyFeedRepost && isRepost(record)) {
@@ -133,12 +137,19 @@ type Operations<T = Record<string, unknown>> = {
   deletes: DeleteOp[]
 }
 
+type AuthorInfo = {
+  did: string;
+  handle: string;
+  displayName?: string;
+  avatar?: string;
+};
+
 type CreateOp<T> = {
-  uri: string
-  cid: string
-  author: string
-  record: T
-}
+  uri: string;
+  cid: string;
+  author: AuthorInfo; // ここでauthor情報を追加
+  record: T;
+};
 
 type DeleteOp = {
   uri: string
